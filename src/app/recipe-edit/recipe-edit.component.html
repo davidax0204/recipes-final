@@ -5,9 +5,11 @@
       <div class="row">
         <div class="col-xs-12">
           <button type="submit"
-                  class="btn btn-success">Save</button>
+                  class="btn btn-success"
+                  [disabled]="!recipeFrom.valid">Save</button>
           <button type="button"
-                  class="btn btn-danger">Cancel</button>
+                  class="btn btn-danger"
+                  (click)="onCancel()">Cancel</button>
         </div>
       </div>
       <div class="row">
@@ -28,13 +30,15 @@
             <input type="text"
                    id="imagePath"
                    formControlName="imagePath"
-                   class="form-control">
+                   class="form-control"
+                   #imagePath>
+
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-xs-12">
-          <img src=""
+          <img [src]="imagePath.value"
                class="img-responsive">
         </div>
       </div>
@@ -56,7 +60,8 @@
 
           <div class="row"
                *ngFor="let ingredientCtrl of controls; let i = index"
-               [formGroupName]="i">
+               [formGroupName]="i"
+               style="margin-top: 10px;">
 
             <div class="col-xs-8">
               <input type="text"
@@ -69,10 +74,19 @@
                      formControlName="amount">
             </div>
             <div class="col-xs-2">
-              <button class="btn btn-danger">X</button>
+              <button type="button"
+                      (click)="onDeleteIngdiant(i)"
+                      class="btn btn-danger">X</button>
             </div>
           </div>
-
+          <hr>
+          <div class="row">
+            <div class="col-xs-12">
+              <button type="button"
+                      class="btn btn-success"
+                      (click)="onAddIngrediant()">Add ingredients</button>
+            </div>
+          </div>
         </div>
       </div>
     </form>
