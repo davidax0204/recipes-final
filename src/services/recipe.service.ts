@@ -9,20 +9,22 @@ import { ShoppingListService } from './shopping-list.service';
 })
 export class RecipeService {
   recipeChanged = new Subject<Recipe[]>();
-  private recipes: Recipe[] = [
-    new Recipe(
-      'Schnitzel',
-      'Perfect Schnitzel',
-      'https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/pizza_on_toast_09337_16x9.jpg',
-      [new Ingredient('meet', 1), new Ingredient('French fries', 20)]
-    ),
-    new Recipe(
-      'Burger',
-      'Amazing Burger',
-      'https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/pizza_on_toast_09337_16x9.jpg',
-      [new Ingredient('Buns', 2), new Ingredient('meet', 1)]
-    ),
-  ];
+  // private recipes: Recipe[] = [
+  //   new Recipe(
+  //     'Schnitzel',
+  //     'Perfect Schnitzel',
+  //     'https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/pizza_on_toast_09337_16x9.jpg',
+  //     [new Ingredient('meet', 1), new Ingredient('French fries', 20)]
+  //   ),
+  //   new Recipe(
+  //     'Burger',
+  //     'Amazing Burger',
+  //     'https://ichef.bbci.co.uk/food/ic/food_16x9_832/recipes/pizza_on_toast_09337_16x9.jpg',
+  //     [new Ingredient('Buns', 2), new Ingredient('meet', 1)]
+  //   ),
+  // ];
+
+  private recipes: Recipe[];
 
   constructor(private ShoppingListService: ShoppingListService) {}
 
@@ -51,6 +53,11 @@ export class RecipeService {
 
   deleteRecipe(index: number) {
     this.recipes.splice(index, 1);
+    this.recipeChanged.next(this.recipes.slice());
+  }
+
+  setRecipes(recipes: Recipe[]) {
+    this.recipes = recipes;
     this.recipeChanged.next(this.recipes.slice());
   }
 }
