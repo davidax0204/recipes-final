@@ -17,9 +17,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { RecipesStartComponent } from './recipes-start/recipes-start.component';
 import { RecipeEditComponent } from './recipe-edit/recipe-edit.component';
 import { DataStorageService } from 'src/services/data-storage.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthComponent } from './auth/auth.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
+import { AuthInterceptorNew } from 'src/services/authsuka-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,12 @@ import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
     ReactiveFormsModule,
     HttpClientModule,
   ],
-  providers: [RecipeService, ShoppingListService, DataStorageService],
+  providers: [
+    RecipeService,
+    ShoppingListService,
+    DataStorageService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorNew, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

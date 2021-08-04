@@ -1,10 +1,12 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { BehaviorSubject, Subject, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { User } from 'src/models/user.model';
 
 interface AuthResponseData {
   kind: string;
+  idToken: string;
   email: string;
   refreshToken: string;
   expiresIn: string;
@@ -16,6 +18,8 @@ interface AuthResponseData {
   providedIn: 'root',
 })
 export class AuthService {
+  user = new BehaviorSubject<User>(null);
+
   constructor(private http: HttpClient) {}
 
   signUp(email: string, password: string) {
@@ -28,7 +32,17 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(catchError(this.handleError));
+      .pipe(
+        catchError(this.handleError),
+        tap((resData) => {
+          this.handleAuthentication(
+            resData.email,
+            resData.localId,
+            resData.idToken,
+            +resData.expiresIn
+          );
+        })
+      );
   }
 
   login(email: string, password: string) {
@@ -41,7 +55,28 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(catchError(this.handleError));
+      .pipe(
+        catchError(this.handleError),
+        tap((resData) => {
+          this.handleAuthentication(
+            resData.email,
+            resData.localId,
+            resData.idToken,
+            +resData.expiresIn
+          );
+        })
+      );
+  }
+
+  private handleAuthentication(
+    email: string,
+    userId: string,
+    token: string,
+    expiresIn: number
+  ) {
+    const expirtaionDate = new Date(new Date().getTime() + expiresIn * 1000);
+    const user = new User(email, userId, token, expirtaionDate);
+    this.user.next(user);
   }
 
   private handleError(errorResponse: HttpErrorResponse) {
@@ -59,7 +94,6 @@ export class AuthService {
       case 'INVALID_PASSWORD':
         errorMessage = 'This password is invalid';
     }
-    console.log(errorMessage);
 
     return throwError(errorMessage);
   }
